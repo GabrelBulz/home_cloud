@@ -1,8 +1,12 @@
 #!/bin/bash
 
+
+##flags for -n and -c
 HAS_N=""
 HAS_C=""
 
+## search recursively
+## if file is .tar create a temp file-> unzip
 search()
 {
 	for i in $(ls)
@@ -10,14 +14,14 @@ search()
 		if [[ "$i" == *.tar.gz || "$i" == *.tgz ]]
 		then
 			mkdir temp_extract_9999
-			tar -xf "$i" --directory temp_extract_9999 
+			tar -xf "$i" --directory temp_extract_9999
 			cd temp_extract_9999
 			search "$@"
 			cd ..
 			rm -r temp_extract_9999
 		else
 			if [ -d $i ]
-			then 
+			then
 				cd $i
 				search "$@"
 				cd ..
@@ -28,10 +32,14 @@ search()
 	done
 }
 
+
+##check if the user entered a forder or a .tar name
+## if .tar unzip in a temp file then go to search
+## else go directy to search
 verify_file_name()
 {
 	if [ -e "$1" ]
-	then 	
+	then
 		if [[ "$1" == *.tar.gz || "$1" == *.tgz ]]
 		then
 			mkdir /tmp/temp_unzip
@@ -48,8 +56,8 @@ verify_file_name()
 			else
 				echo "File name must be a directory or a .tar.gz or tgz type"
 				exit 1
-			fi 
-			
+			fi
+
 		fi
 	else
 		echo "File name does not exist"
@@ -58,6 +66,7 @@ verify_file_name()
 }
 
 
+##set flags -n and -c and select the filename
 parse_command()
 {
 	file_name=0
@@ -65,28 +74,29 @@ parse_command()
 	while (("$#"))
 	do
 		if [ "$1" == "-n" ]
-		then 
+		then
 			HAS_N="-n"
 		else
 			if [ "$1" == "-c" ]
-			then 
+			then
 				HAS_C="-c"
 			else
 				file_name="$1"
 			fi
 		fi
 
-		shift	
+		shift
 	done
 
 	verify_file_name "$file_name" "$@"
 }
 
 
+##test if the user passed a filename
 parse_command_test()
 {
 	if [ "$#" -le "0" ]
-	then 
+	then
 		echo "File name missing"
 		exit 1
 	else

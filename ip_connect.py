@@ -1,31 +1,18 @@
 import sys
 
+## split data and check
+## return -> array: position 0-3:ip, 4-mask
 def parse_ip(input):
 
     data=input.split(".")
-
-    ok=0
-
-    for i in data:
-        if("/" in i):
-            if( ok == 1): ##if it encounter another / sign
-                print("incorrect input")
-                return 0
-            else:
-                temp=i.split("/")
-                ok=1
-
-    if(ok == 0):
-        print("bad input")
-        return 0
-
     result=[]
 
-    for i in range (len(data)-1):
-        result.append(int(data[i]))
-
-    for i in temp:
-        result.append(int(i))
+    for i in data:
+        if('/' in i):
+            result.append(int(i.split("/")[0]))
+            result.append(int(i.split("/")[1]))
+        else:
+            result.append(int(i))
 
     if(len(result) < 5):
         print("bad input")
@@ -57,6 +44,7 @@ def create_mask(msk):
     return mask
 
 
+## create the network based on ip, mask
 def get_network(ip,msk):
 
     mask=create_mask(msk)
@@ -73,6 +61,7 @@ def get_network(ip,msk):
     return result
 
 
+## create the brodcast based on ip, mask
 def get_brodcast(ip,msk):
 
     mask=create_mask(msk)
@@ -98,26 +87,16 @@ def main():
     usr2=parse_ip(sys.argv[2])
 
     if(usr1 == 0 or usr2 == 0):
-        return 0
+        return
 
-
-    mk1=usr1[4] ##mask 1 and 2
-    mk2=usr2[4]
-
-    net1=get_network(usr1,mk1)
-    brodcast1=get_brodcast(usr1,mk1)
-
-    ok=1
+    net1=get_network(usr1,usr1[4])
+    brodcast1=get_brodcast(usr1,usr1[4])
 
     for i in range(len(usr1)-1):
         if(usr2[i]<net1[i] or usr2[i]>brodcast1[i]):
-            ok=0
+            print('Nu mai fii parnaie ca nu merg')
+            return
 
-    if(ok):
-        print('can communicate')
-    else:
-        print('Nu mai fii parnaie ca nu merg')
-
-
+    print('can communicate')
 
 main()
